@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import fs from "fs";
 import type { ChatCompletionMessageParam } from "openai/resources";
-import { exec } from 'node:child_process';
+import { execSync } from 'node:child_process';
 
 async function main() {
   const [, , flag, prompt] = process.argv;
@@ -121,20 +121,12 @@ async function main() {
                 messages.push({ role: "tool", tool_call_id: toolCall.id, content });
               }
             } else if (func.name === "Bash") {
+              console.log(func);
               const args = JSON.parse(func.arguments);
               const command = args.command;
               if (command) {
-                exec(command, (error: any, stdout: string, stderr: string) => {
-                  let output = "";
-                  if (error) {
-                    output += error.message;
-                  }
-                  if (stderr) {
-                    output += `Stderr: ${stderr}\n`;
-                  }
-                  output += `Stdout: ${stdout}\n`;
-                  messages.push({ role: "tool", tool_call_id: toolCall.id, content: output });
-                });
+                const output = execSync(command, { encoding: 'utf-8' });
+                messages.push({ role: "tool", tool_call_id: toolCall.id, content: output });
               }
             }
           }
