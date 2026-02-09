@@ -51,11 +51,16 @@ async function main() {
   		}
 
   		console.error("Logs from your program will appear here!");
-  		console.log(choices);
 
-  		const message = choices[0].message;
-  		if (message) {
-  			if (message.tool_calls && message.tool_calls.length > 0) {
+		if (choices[0].finish_reason === "stop") {
+			break;
+		}
+
+		for (const choice in choices) {
+			const message = choice.message;
+			if (!message) continue;
+			console.log(message);
+			if (message.tool_calls) {
   				for (const toolCall of message.tool_calls) {	
   					if (toolCall.type === "function") {
   						const func = toolCall.function;
@@ -73,17 +78,15 @@ async function main() {
   							}
   						}
   					}
-  				}
-     		} else if (message.content) {
+  				}		
+			} else if (message.content) {
      			messages.push({
      				role: "user",
      				content: message.content
-     			})
-     		} else {
-     			break;
-     		}
-  		} else {
-  			break;
+     			});
+			} else {
+				break;
+			}
   		}
   	}
 }
