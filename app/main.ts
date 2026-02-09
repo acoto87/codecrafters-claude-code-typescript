@@ -22,7 +22,8 @@ async function main() {
 
   const messages: ChatCompletionMessageParam[] = [{ role: "user", content: prompt }];
 
-  while (true) {
+  let stop = false;
+  while (!stop) {
     const response = await client.chat.completions.create({
       model: "anthropic/claude-haiku-4.5",
       messages: messages,
@@ -54,19 +55,16 @@ async function main() {
 
     console.error("Logs from your program will appear here!");
 
-    if (choices[0].finish_reason === "stop") {
-      break;
-    }
-
     for (const choice of choices) {
+      if (choice.finish_reason === "stop") {
+        stop = true;
+        break;
+      }
       const message = choice.message;
       if (!message) {
         continue;
       }
       messages.push({ role: "assistant", content: message.content, tool_calls: message.tool_calls });
-      if (message.content) {
-        console.log(message.content);
-      }
       if (message.tool_calls) {
         for (const toolCall of message.tool_calls) {
           if (toolCall.type === "function") {
@@ -81,6 +79,10 @@ async function main() {
             }
           }
         }
+      } else if (message.content) {
+        console.log(message.content);
+        stop = true;
+        break;
       }
     }
   }
