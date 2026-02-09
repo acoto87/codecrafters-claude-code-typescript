@@ -51,6 +51,7 @@ async function main() {
   		}
 
   		console.error("Logs from your program will appear here!");
+  		console.log(choices);
 
   		const message = choices[0].message;
   		if (message) {
