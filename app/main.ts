@@ -1,5 +1,4 @@
 import OpenAI from "openai";
-import { JSON5 } from "bun";
 
 async function main() {
   const [, , flag, prompt] = process.argv;
@@ -54,8 +53,8 @@ async function main() {
   	if (toolCalls && toolCalls.length > 0) {
   		if (toolCalls[0].type === "function") {
   			const func = toolCalls[0].function;
-  			if (func.name === "Read" && func["arguments"]) {
-  				const arguments = JSON5.parse(func["arguments"]);
+ 			if (func.name === "Read" && func["arguments"]) {
+  				const arguments = JSON.parse(func["arguments"]);
   				const filePath = arguments.file_path;
   				if (filePath) {
   					const file = Bun.file(filePath);
