@@ -23,6 +23,7 @@ async function main() {
   const messages: ChatCompletionMessageParam[] = [{ role: "user", content: prompt }];
 
   while (true) {
+    console.log("messages", messages);
     const response = await client.chat.completions.create({
       model: "anthropic/claude-haiku-4.5",
       messages: messages,
@@ -63,6 +64,7 @@ async function main() {
       if (!message) {
         continue;
       }
+      console.log(message);
       if (message.content) {
         messages.push({ role: "user", content: message.content });
       }
