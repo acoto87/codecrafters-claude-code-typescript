@@ -60,6 +60,7 @@ async function main() {
  			if (func.name === "Read" && func.arguments) {
   				const args = JSON.parse(func.arguments);
   				const filePath = args.file_path;
+  				console.log(args, filePath);
   				if (filePath) {
   					const file = Bun.file(filePath);
   					const text = await file.text();
