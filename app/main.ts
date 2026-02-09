@@ -51,7 +51,10 @@ async function main() {
 
   // You can use print statements as follows for debugging, they'll be visible when running tests.
   const message = choices[0].message;
-  if (message) {  	
+  if (message) {
+  	if (message.content) {
+  		console.log(message.content);
+  	}  	
   	if (message.tool_calls && message.tool_calls.length > 0) {
   		const toolCall = message.tool_calls[0];
   		if (toolCall.type === "function") {
