@@ -80,8 +80,6 @@ async function main() {
             }
           }
         }
-      } else {
-        break;
       }
     }
   }
