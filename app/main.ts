@@ -59,8 +59,15 @@ async function main() {
 		for (const choice of choices) {
 			const message = choice.message;
 			if (!message) continue;
-			console.log(message);
+			if (message.content) {
+				console.log(message.content);
+     			messages.push({
+     				role: "user",
+     				content: message.content
+     			});
+			} 
 			if (message.tool_calls) {
+				console.lot(message.tool_calls);
   				for (const toolCall of message.tool_calls) {	
   					if (toolCall.type === "function") {
   						const func = toolCall.function;
@@ -79,11 +86,6 @@ async function main() {
   						}
   					}
   				}		
-			} else if (message.content) {
-     			messages.push({
-     				role: "user",
-     				content: message.content
-     			});
 			} else {
 				break;
 			}
