@@ -54,8 +54,8 @@ async function main() {
   		if (toolCalls[0].type === "function") {
   			const func = toolCalls[0].function;
  			if (func.name === "Read" && func["arguments"]) {
-  				const arguments = JSON.parse(func["arguments"]);
-  				const filePath = arguments.file_path;
+  				const args = JSON.parse(func["arguments"]);
+  				const filePath = args.file_path;
   				if (filePath) {
   					const file = Bun.file(filePath);
   					const text = file.text();
