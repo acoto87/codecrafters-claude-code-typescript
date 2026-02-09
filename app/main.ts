@@ -134,7 +134,7 @@ async function main() {
                   }
                   output += `Stdout: ${stdout}\n`;
                   messages.push({ role: "tool", tool_call_id: toolCall.id, content: output });
-                }
+                });
               }
             }
           }
