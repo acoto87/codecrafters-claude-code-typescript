@@ -56,6 +56,7 @@ async function main() {
     console.error("Logs from your program will appear here!");
 
     for (const choice of choices) {
+      console.log("Received choice:", choice);
       if (choice.finish_reason === "stop") {
         stop = true;
         break;
@@ -64,6 +65,7 @@ async function main() {
       if (!message) {
         continue;
       }
+      console.log("Received message:", message);
       messages.push({ role: "assistant", content: message.content, tool_calls: message.tool_calls });
       if (message.tool_calls) {
         for (const toolCall of message.tool_calls) {
