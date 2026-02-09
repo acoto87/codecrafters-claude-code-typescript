@@ -76,7 +76,7 @@ async function main() {
   		}
      } else if (message.content) {
      	messages.push({
-     		role: "assistant",
+     		role: "user",
      		content: message.content
      	})
      } else {
