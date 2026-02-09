@@ -67,7 +67,7 @@ async function main() {
      			});
 			} 
 			if (message.tool_calls) {
-				console.lot(message.tool_calls);
+				console.log(message.tool_calls);
   				for (const toolCall of message.tool_calls) {	
   					if (toolCall.type === "function") {
   						const func = toolCall.function;
