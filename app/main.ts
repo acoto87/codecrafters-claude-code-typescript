@@ -54,6 +54,7 @@ async function main() {
   if (message) {
   	console.log(message.content);
   	
+  		console.log(message);
   	if (message.tool_calls && message.tool_calls.length > 0) {
   		const toolCall = message.tool_calls[0];
   		if (toolCall.type === "function") {
