@@ -1,91 +1,90 @@
 import OpenAI from "openai";
 
 async function main() {
-  const [, , flag, prompt] = process.argv;
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  const baseURL =
-	process.env.OPENROUTER_BASE_URL ?? "https://openrouter.ai/api/v1";
+  	const [, , flag, prompt] = process.argv;
+  	const apiKey = process.env.OPENROUTER_API_KEY;
+  	const baseURL =
+		process.env.OPENROUTER_BASE_URL ?? "https://openrouter.ai/api/v1";
 
-  if (!apiKey) {
-	throw new Error("OPENROUTER_API_KEY is not set");
-  }
-  if (flag !== "-p" || !prompt) {
-	throw new Error("error: -p flag is required");
-  }
+  	if (!apiKey) {
+		throw new Error("OPENROUTER_API_KEY is not set");
+  	}
+  	if (flag !== "-p" || !prompt) {
+		throw new Error("error: -p flag is required");
+  	}
 
-  const client = new OpenAI({
-	apiKey: apiKey,
-	baseURL: baseURL,
-  });
+  	const client = new OpenAI({
+		apiKey: apiKey,
+		baseURL: baseURL,
+  	});
 
-  const messages = [{ role: "user", content: prompt }];
+  	const messages = [{ role: "user", content: prompt }];
 
-  while (true) {
-  const response = await client.chat.completions.create({
-	model: "anthropic/claude-haiku-4.5",
-	messages: messages,
-	tools: [
-	  {
-		"type": "function",
-		"function": {
-		  "name": "Read",
-		  "description": "Reads the content of a file given its path.",
-		  "parameters": {
-			"type": "object",
-			"properties": {
-			  "file_path": {
-				"type:": "string",
-				"description": "The path to the file to read."
-			  }
-			},
-			"required": ["file_path"]
-		  }
-		}
-	  }
-	]
-  });
+  	while (true) {
+  		const response = await client.chat.completions.create({
+			model: "anthropic/claude-haiku-4.5",
+			messages: messages,
+			tools: [
+	  			{
+					"type": "function",
+					"function": {
+		  				"name": "Read",
+		  				"description": "Reads the content of a file given its path.",
+		  				"parameters": {
+							"type": "object",
+							"properties": {
+			  					"file_path": {
+									"type:": "string",
+									"description": "The path to the file to read."
+			  					}
+							},
+							"required": ["file_path"]
+		  				}
+					}
+	  			}
+			]
+  		});
 
-  const choices = response.choices;
-  if (!choices || choices.length === 0) {
-	throw new Error("no choices in response");
-  }
+  		const choices = response.choices;
+  		if (!choices || choices.length === 0) {
+			throw new Error("no choices in response");
+  		}
 
-  console.error("Logs from your program will appear here!");
+  		console.error("Logs from your program will appear here!");
 
-  // You can use print statements as follows for debugging, they'll be visible when running tests.
-  const message = choices[0].message;
-  if (message) {
-  	if (message.tool_calls && message.tool_calls.length > 0) {
-  		for (const toolCall of message.tool_calls) {	
-  		if (toolCall.type === "function") {
-  			const func = toolCall.function;
- 			if (func.name === "Read") {
-  				const args = JSON.parse(func.arguments);
-  				const filePath = args.file_path;
-  				if (filePath) {
-  					const file = Bun.file(filePath);
-  					const text = await file.text();
-  					messages.push({
-  						role: "tool",
-  						tool_call_id: toolCall.id,
-  						content: text	
-  					});
+  		const message = choices[0].message;
+  		if (message) {
+  			if (message.tool_calls && message.tool_calls.length > 0) {
+  				for (const toolCall of message.tool_calls) {	
+  					if (toolCall.type === "function") {
+  						const func = toolCall.function;
+ 						if (func.name === "Read") {
+  							const args = JSON.parse(func.arguments);
+  							const filePath = args.file_path;
+  							if (filePath) {
+  								const file = Bun.file(filePath);
+  								const text = await file.text();
+  								messages.push({
+  									role: "tool",
+  									tool_call_id: toolCall.id,
+  									content: text	
+  								});
+  							}
+  						}
+  					}
   				}
-  			}
+     		} else if (message.content) {
+     			messages.push({
+     				role: "user",
+     				content: message.content
+     			})
+     		} else {
+     			break;
+     		}
+  		} else {
+  			break;
   		}
-  		}
-     } else if (message.content) {
-     	messages.push({
-     		role: "user",
-     		content: message.content
-     	})
-     } else {
-     	break;
-     }
-  } else {
-  	break;
-  }
-  }
+  	}
 }
 
 main();
