@@ -54,6 +54,7 @@ async function main() {
   if (message) {  	
   	if (message.tool_calls && message.tool_calls.length > 0) {
   		const toolCall = message.tool_calls[0];
+  		console.log(toolCall);
   		if (toolCall.type === "function") {
   			const func = toolCall.function;
  			if (func.name === "Read" && func.arguments) {
@@ -66,7 +67,7 @@ async function main() {
   				}
   			}
   		}
-  	}
+     }
   }
 }
 
