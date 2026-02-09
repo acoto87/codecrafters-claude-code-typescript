@@ -47,15 +47,11 @@ async function main() {
 	throw new Error("no choices in response");
   }
 
-  console.log(choices);
-
   console.error("Logs from your program will appear here!");
 
   // You can use print statements as follows for debugging, they'll be visible when running tests.
   const message = choices.message;
-  if (message) {
-  	console.log(message.content);
-  	
+  if (message) {  	
   	if (message.tool_calls && message.tool_calls.length > 0) {
   		const toolCall = message.tool_calls[0];
   		if (toolCall.type === "function") {
