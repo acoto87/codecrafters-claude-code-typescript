@@ -60,11 +60,11 @@ async function main() {
 			const message = choice.message;
 			if (!message) continue;
 			if (message.content) {
-				console.log(message.content);
      			messages.push({
      				role: "user",
      				content: message.content
      			});
+				console.log(messages);
 			} 
 			if (message.tool_calls) {
 				console.log(message.tool_calls);
@@ -82,6 +82,7 @@ async function main() {
   									tool_call_id: toolCall.id,
   									content: text	
   								});
+  								console.log(messages);
   							}
   						}
   					}
