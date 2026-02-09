@@ -64,10 +64,7 @@ async function main() {
       if (!message) {
         continue;
       }
-      console.log(message);
-      if (message.content) {
-        messages.push({ role: "user", content: message.content });
-      }
+      messages.push({ role: "assistant", content: message.content, tool_calls: message.tool_calls });
       if (message.tool_calls) {
         for (const toolCall of message.tool_calls) {
           if (toolCall.type === "function") {
