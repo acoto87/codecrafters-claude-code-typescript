@@ -23,7 +23,6 @@ async function main() {
   const messages: ChatCompletionMessageParam[] = [{ role: "user", content: prompt }];
 
   while (true) {
-    console.log("messages", messages);
     const response = await client.chat.completions.create({
       model: "anthropic/claude-haiku-4.5",
       messages: messages,
@@ -65,6 +64,9 @@ async function main() {
         continue;
       }
       messages.push({ role: "assistant", content: message.content, tool_calls: message.tool_calls });
+      if (message.content) {
+        console.log(message.content);
+      }
       if (message.tool_calls) {
         for (const toolCall of message.tool_calls) {
           if (toolCall.type === "function") {
