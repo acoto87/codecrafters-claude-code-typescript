@@ -56,7 +56,7 @@ async function main() {
 			break;
 		}
 
-		for (const choice in choices) {
+		for (const choice of choices) {
 			const message = choice.message;
 			if (!message) continue;
 			console.log(message);
