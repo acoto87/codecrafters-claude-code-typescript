@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import fs from "fs";
 import type { ChatCompletionMessageParam } from "openai/resources";
+import { exec } from 'node:child_process';
 
 async function main() {
   const [, , flag, prompt] = process.argv;
@@ -65,6 +66,23 @@ async function main() {
               }
             }
           }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "Bash",
+            "description": "Execute a shell command",
+            "parameters": {
+              "type": "object",
+              "required": ["command"],
+              "properties": {
+                "command": {
+                  "type": "string",
+                  "description": "The command to execute"
+                }
+              }
+            }
+          }
         }
       ]
     });
@@ -74,8 +92,6 @@ async function main() {
       throw new Error("no choices in response");
     }
 
-    console.error("Logs from your program will appear here!");
-
     for (const choice of choices) {
       const message = choice.message;
       if (!message) {
@@ -83,6 +99,9 @@ async function main() {
       }
       messages.push({ role: "assistant", content: message.content, tool_calls: message.tool_calls });
       if (message.tool_calls) {
+        if (message.content) {
+          console.error(message.content);
+        }
         for (const toolCall of message.tool_calls) {
           if (toolCall.type === "function") {
             const func = toolCall.function;
@@ -100,6 +119,22 @@ async function main() {
               if (filePath && content) {
                 await fs.promises.writeFile(filePath, content, "utf-8");
                 messages.push({ role: "tool", tool_call_id: toolCall.id, content });
+              }
+            } else if (func.name === "Bash") {
+              const args = JSON.parse(func.arguments);
+              const command = args.command;
+              if (command) {
+                exec(command, (error: any, stdout: string, stderr: string) => {
+                  let output = "";
+                  if (error) {
+                    output = error.message;
+                  } else if (stderr) {
+                    output = stderr;
+                  } else {
+                    output = stdout;
+                  }
+                  messages.push({ role: "tool", tool_call_id: toolCall.id, content: output });
+                });
               }
             }
           }
