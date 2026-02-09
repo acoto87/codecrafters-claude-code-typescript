@@ -127,14 +127,14 @@ async function main() {
                 exec(command, (error: any, stdout: string, stderr: string) => {
                   let output = "";
                   if (error) {
-                    output = error.message;
-                  } else if (stderr) {
-                    output = stderr;
-                  } else {
-                    output = stdout;
+                    output += error.message;
                   }
+                  if (stderr) {
+                    output += `Stderr: ${stderr}\n`;
+                  }
+                  output += `Stdout: ${stdout}\n`;
                   messages.push({ role: "tool", tool_call_id: toolCall.id, content: output });
-                });
+                }
               }
             }
           }
