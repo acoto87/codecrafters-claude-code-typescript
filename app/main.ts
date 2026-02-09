@@ -18,9 +18,12 @@ async function main() {
 	baseURL: baseURL,
   });
 
+  const messages = [{ role: "user", content: prompt }];
+
+  while (true) {
   const response = await client.chat.completions.create({
 	model: "anthropic/claude-haiku-4.5",
-	messages: [{ role: "user", content: prompt }],
+	messages: messages,
 	tools: [
 	  {
 		"type": "function",
@@ -52,24 +55,36 @@ async function main() {
   // You can use print statements as follows for debugging, they'll be visible when running tests.
   const message = choices[0].message;
   if (message) {
-  	if (message.content) {
-  		console.log(message.content);
-  	}  	
   	if (message.tool_calls && message.tool_calls.length > 0) {
-  		const toolCall = message.tool_calls[0];
+  		for (const toolCall of message.tool_calls) {	
   		if (toolCall.type === "function") {
   			const func = toolCall.function;
- 			if (func.name === "Read" && func.arguments) {
+ 			if (func.name === "Read") {
   				const args = JSON.parse(func.arguments);
   				const filePath = args.file_path;
   				if (filePath) {
   					const file = Bun.file(filePath);
   					const text = await file.text();
-  					console.log(text);
+  					messages.push({
+  						role: "tool",
+  						tool_call_id: toolCall.id,
+  						content: text	
+  					});
   				}
   			}
   		}
+  		}
+     } else if (message.content) {
+     	messages.push({
+     		role: "assistant",
+     		content: message.content
+     	})
+     } else {
+     	break;
      }
+  } else {
+  	break;
+  }
   }
 }
 
